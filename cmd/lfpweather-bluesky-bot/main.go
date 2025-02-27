@@ -103,7 +103,7 @@ func main() {
 			return
 		}
 
-		postCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		postCtx, cancel := context.WithTimeout(ctx, c.BlueskyAPITimeout)
 		defer cancel()
 
 		err = blueskyClient.WritePost(postCtx, summary.Summary)

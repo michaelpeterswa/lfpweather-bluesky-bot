@@ -18,6 +18,7 @@ services:
 
       DAILY_FORECAST_CRON_SCHEDULE: "* * * * *"
 
+      # yamllint disable-line rule:line-length
       LFP_WEATHER_FORECAST_INFERENCE_API_URL: "https://forecasting.lfpweather.com"
       # LFP_WEATHER_FORECAST_INFERENCE_API_KEY: xxx
       LFP_WEATHER_FORECAST_INFERENCE_API_TIMEOUT: "10s"
