@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/caarlos0/env/v11"
 )
@@ -13,6 +14,17 @@ type Config struct {
 	MetricsPort    int  `env:"METRICS_PORT" envDefault:"8081"`
 
 	Local bool `env:"LOCAL" envDefault:"false"`
+
+	DailyForecastCronSchedule string `env:"DAILY_FORECAST_CRON_SCHEDULE" envDefault:"30 6 * * *"`
+
+	LFPWeatherForecastInferenceAPIURL     string        `env:"LFP_WEATHER_FORECAST_INFERENCE_API_URL"`
+	LFPWeatherForecastInferenceAPIAPIKey  string        `env:"LFP_WEATHER_FORECAST_INFERENCE_API_API_KEY"`
+	LFPWeatherForecastInferenceAPITimeout time.Duration `env:"LFP_WEATHER_FORECAST_INFERENCE_API_TIMEOUT" envDefault:"5s"`
+
+	BlueskyHost       string        `env:"BLUESKY_HOST" envDefault:"https://bsky.social"`
+	BlueskyUsername   string        `env:"BLUESKY_USERNAME"`
+	BlueskyPassword   string        `env:"BLUESKY_PASSWORD"`
+	BlueskyAPITimeout time.Duration `env:"BLUESKY_API_TIMEOUT" envDefault:"5s"`
 
 	TracingEnabled    bool    `env:"TRACING_ENABLED" envDefault:"false"`
 	TracingSampleRate float64 `env:"TRACING_SAMPLERATE" envDefault:"0.01"`
