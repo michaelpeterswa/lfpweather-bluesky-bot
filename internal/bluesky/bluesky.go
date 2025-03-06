@@ -55,8 +55,6 @@ func (bc *BlueskyClient) WritePost(ctx context.Context, text string) error {
 		Langs:     []string{"en-US"},
 	}
 
-	atproto.ServerRefreshSession()
-
 	_, err := atproto.RepoCreateRecord(
 		ctx,
 		bc.xrpcClient,
