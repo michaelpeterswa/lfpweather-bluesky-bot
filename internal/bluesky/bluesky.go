@@ -35,10 +35,10 @@ func NewBlueskyClient(ctx context.Context, host string, username string, passwor
 	}
 
 	xrpcClient.Auth = &xrpc.AuthInfo{
-		AccessJwt: auth.AccessJwt,
-		// RefreshJwt: auth.RefreshJwt,
-		// Handle:     username,
-		// Did:        handle.Did,
+		AccessJwt:  auth.AccessJwt,
+		RefreshJwt: auth.RefreshJwt,
+		Handle:     auth.Handle,
+		Did:        auth.Did,
 	}
 
 	return &BlueskyClient{
