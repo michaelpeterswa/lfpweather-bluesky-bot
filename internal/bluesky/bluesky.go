@@ -35,10 +35,10 @@ func NewBlueskyClient(ctx context.Context, host string, username string, passwor
 	}
 
 	xrpcClient.Auth = &xrpc.AuthInfo{
-		AccessJwt: auth.AccessJwt,
-		// RefreshJwt: auth.RefreshJwt,
-		// Handle:     username,
-		// Did:        handle.Did,
+		AccessJwt:  auth.AccessJwt,
+		RefreshJwt: auth.RefreshJwt,
+		Handle:     auth.Handle,
+		Did:        auth.Did,
 	}
 
 	return &BlueskyClient{
@@ -54,6 +54,8 @@ func (bc *BlueskyClient) WritePost(ctx context.Context, text string) error {
 		CreatedAt: currentTime.Format(time.RFC3339),
 		Langs:     []string{"en-US"},
 	}
+
+	atproto.ServerRefreshSession()
 
 	_, err := atproto.RepoCreateRecord(
 		ctx,
