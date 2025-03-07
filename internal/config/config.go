@@ -21,10 +21,11 @@ type Config struct {
 	LFPWeatherForecastInferenceAPIAPIKey  string        `env:"LFP_WEATHER_FORECAST_INFERENCE_API_API_KEY"`
 	LFPWeatherForecastInferenceAPITimeout time.Duration `env:"LFP_WEATHER_FORECAST_INFERENCE_API_TIMEOUT" envDefault:"5s"`
 
-	BlueskyHost       string        `env:"BLUESKY_HOST" envDefault:"https://bsky.social"`
-	BlueskyUsername   string        `env:"BLUESKY_USERNAME"`
-	BlueskyPassword   string        `env:"BLUESKY_PASSWORD"`
-	BlueskyAPITimeout time.Duration `env:"BLUESKY_API_TIMEOUT" envDefault:"5s"`
+	BlueskyHost                     string        `env:"BLUESKY_HOST" envDefault:"https://bsky.social"`
+	BlueskyUsername                 string        `env:"BLUESKY_USERNAME"`
+	BlueskyPassword                 string        `env:"BLUESKY_PASSWORD"`
+	BlueskyAPITimeout               time.Duration `env:"BLUESKY_API_TIMEOUT" envDefault:"5s"`
+	BlueskyTokenRefreshCronSchedule string        `env:"BLUESKY_TOKEN_REFRESH_CRON_SCHEDULE" envDefault:"*/10 * * * *"`
 
 	TracingEnabled    bool    `env:"TRACING_ENABLED" envDefault:"false"`
 	TracingSampleRate float64 `env:"TRACING_SAMPLERATE" envDefault:"0.01"`
