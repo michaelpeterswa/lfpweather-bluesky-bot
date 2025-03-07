@@ -3,6 +3,8 @@ package bluesky
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"sync"
 	"time"
 
 	"github.com/bluesky-social/indigo/api/atproto"
@@ -14,6 +16,7 @@ import (
 type BlueskyClient struct {
 	xrpcClient *xrpc.Client
 	did        string
+	mu         sync.Mutex
 }
 
 func NewBlueskyClient(ctx context.Context, host string, username string, password string) (*BlueskyClient, error) {
@@ -44,7 +47,30 @@ func NewBlueskyClient(ctx context.Context, host string, username string, passwor
 	return &BlueskyClient{
 		xrpcClient: xrpcClient,
 		did:        handle.Did,
+		mu:         sync.Mutex{},
 	}, nil
+}
+
+func (bc *BlueskyClient) RefreshAuth(ctx context.Context) error {
+	bc.mu.Lock()
+	defer bc.mu.Unlock()
+
+	bc.xrpcClient.Auth.AccessJwt = bc.xrpcClient.Auth.RefreshJwt
+	resp, err := atproto.ServerRefreshSession(ctx, bc.xrpcClient)
+	if err != nil {
+		return fmt.Errorf("failed to refresh session: %w", err)
+	}
+
+	bc.xrpcClient.Auth = &xrpc.AuthInfo{
+		AccessJwt:  resp.AccessJwt,
+		RefreshJwt: resp.RefreshJwt,
+		Handle:     resp.Handle,
+		Did:        resp.Did,
+	}
+
+	slog.Debug("refreshed auth", slog.String("did", resp.Did), slog.String("handle", resp.Handle))
+
+	return nil
 }
 
 func (bc *BlueskyClient) WritePost(ctx context.Context, text string) error {

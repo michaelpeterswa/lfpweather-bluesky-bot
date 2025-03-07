@@ -115,7 +115,18 @@ func main() {
 		slog.Debug("wrote post", slog.String("summary", summary.Summary))
 	})
 	if err != nil {
-		slog.Error("could not add cron job", slog.String("error", err.Error()))
+		slog.Error("could not add forecast cron job", slog.String("error", err.Error()))
+	}
+
+	_, err = cronDaemon.AddFunc(c.BlueskyTokenRefreshCronSchedule, func() {
+		err := blueskyClient.RefreshAuth(ctx)
+		if err != nil {
+			slog.Error("could not refresh auth", slog.String("error", err.Error()))
+			return
+		}
+	})
+	if err != nil {
+		slog.Error("could not add token refresh cron job", slog.String("error", err.Error()))
 	}
 
 	cronDaemon.Start()
