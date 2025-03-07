@@ -14,12 +14,14 @@ import (
 )
 
 type BlueskyClient struct {
-	xrpcClient *xrpc.Client
-	did        string
-	mu         sync.Mutex
+	xrpcClient           *xrpc.Client
+	did                  string
+	mu                   sync.Mutex
+	accessTokenExpiresAt time.Time
+	forceRefreshDuration time.Duration
 }
 
-func NewBlueskyClient(ctx context.Context, host string, username string, password string) (*BlueskyClient, error) {
+func NewBlueskyClient(ctx context.Context, host string, username string, password string, forceRefreshDuration time.Duration) (*BlueskyClient, error) {
 	xrpcClient := &xrpc.Client{
 		Host: host,
 	}
@@ -44,14 +46,27 @@ func NewBlueskyClient(ctx context.Context, host string, username string, passwor
 		Did:        auth.Did,
 	}
 
+	accessTokenExpires, err := ExpiresAt(ctx, xrpcClient.Auth)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get access token expiration: %w", err)
+	}
+
 	return &BlueskyClient{
-		xrpcClient: xrpcClient,
-		did:        handle.Did,
-		mu:         sync.Mutex{},
+		xrpcClient:           xrpcClient,
+		did:                  handle.Did,
+		mu:                   sync.Mutex{},
+		accessTokenExpiresAt: accessTokenExpires,
+		forceRefreshDuration: forceRefreshDuration,
 	}, nil
 }
 
 func (bc *BlueskyClient) RefreshAuth(ctx context.Context) error {
+	if time.Now().Before(bc.accessTokenExpiresAt.Add(-bc.forceRefreshDuration)) {
+		expiresIn := time.Until(bc.accessTokenExpiresAt)
+		slog.Debug("skipping refresh auth", slog.String("did", bc.did), slog.String("expires_in", expiresIn.String()))
+		return nil
+	}
+
 	bc.mu.Lock()
 	defer bc.mu.Unlock()
 
@@ -66,6 +81,12 @@ func (bc *BlueskyClient) RefreshAuth(ctx context.Context) error {
 		RefreshJwt: resp.RefreshJwt,
 		Handle:     resp.Handle,
 		Did:        resp.Did,
+	}
+
+	// make sure to update the expiration time
+	bc.accessTokenExpiresAt, err = ExpiresAt(ctx, bc.xrpcClient.Auth)
+	if err != nil {
+		return fmt.Errorf("failed to get access token expiration: %w", err)
 	}
 
 	slog.Debug("refreshed auth", slog.String("did", resp.Did), slog.String("handle", resp.Handle))

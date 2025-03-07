@@ -85,7 +85,7 @@ func main() {
 
 	forecastClient := forecast.NewForecastClient(http.DefaultClient, c.LFPWeatherForecastInferenceAPIURL, c.LFPWeatherForecastInferenceAPIAPIKey)
 
-	blueskyClient, err := bluesky.NewBlueskyClient(ctx, c.BlueskyHost, c.BlueskyUsername, c.BlueskyPassword)
+	blueskyClient, err := bluesky.NewBlueskyClient(ctx, c.BlueskyHost, c.BlueskyUsername, c.BlueskyPassword, c.BlueskyTokenRefreshForceRefreshWhenExpiresIn)
 	if err != nil {
 		slog.Error("could not create bluesky client", slog.String("error", err.Error()))
 		os.Exit(1)

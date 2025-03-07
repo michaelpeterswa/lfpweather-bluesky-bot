@@ -8,7 +8,7 @@ services:
       - .env
     environment:
       # logging
-      LOG_LEVEL: "info"
+      LOG_LEVEL: "debug"
 
       # metrics
       METRICS_ENABLED: "true"
@@ -26,6 +26,7 @@ services:
       # BLUESKY_HOST: "https://bsky.social"
       # BLUESKY_USERNAME: xxx
       # BLUESKY_PASSWORD: xxx
+      BLUESKY_TOKEN_REFRESH_CRON_SCHEDULE: "* * * * *"
 
       # tracing
       TRACING_ENABLED: "false"
